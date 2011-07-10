@@ -2,7 +2,6 @@
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 
 'use strict';
-var isWorker = (typeof window == 'undefined');
 
 /**
  * Maximum file size of the font.
@@ -88,7 +87,7 @@ var FontLoader = {
       for (var j = 0; j < length; j++)
         str += String.fromCharCode(data[j]);
 
-      var rule = isWorker ? obj.bindWorker(str) : obj.bindDOM(str);
+      var rule = obj.addFontFaceCSSRule(str);
       if (rule) {
         rules.push(rule);
         names.push(obj.loadedName);
@@ -97,9 +96,8 @@ var FontLoader = {
     }
 
     this.listeningForFontLoad = false;
-    if (!isWorker && rules.length) {
+    if (rules.length)
       FontLoader.prepareFontLoadEvent(rules, names, ids);
-    }
     
     if (!checkFontsLoaded()) {
       document.documentElement.addEventListener(
@@ -1056,18 +1054,7 @@ var Font = (function() {
       return fontData;
     },
 
-    bindWorker: function font_bindWorker(data) {
-      postMessage({
-        action: 'font',
-        data: {
-          raw: data,
-          fontName: this.loadedName,
-          mimetype: this.mimetype
-        }
-      });
-    },
-
-    bindDOM: function font_bindDom(data) {
+    addFontFaceCSSRule: function font_addFontFaceCSSRule(data) {
       var fontName = this.loadedName;
 
       // Add the font-face rule to the document
