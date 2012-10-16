@@ -135,6 +135,19 @@ function shadow(obj, prop, value) {
   return value;
 }
 
+var InvalidPDFException = (function InvalidPDFExceptionClosure() {
+  function InvalidPDFException(msg, code) {
+    this.name = 'InvalidPDFException';
+    this.message = msg;
+    this.code = code;
+  }
+
+  InvalidPDFException.prototype = new Error();
+  InvalidPDFException.constructor = InvalidPDFException;
+
+  return InvalidPDFException;
+})();
+
 var PasswordException = (function PasswordExceptionClosure() {
   function PasswordException(msg, code) {
     this.name = 'PasswordException';
